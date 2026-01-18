@@ -28,11 +28,16 @@ public class DataHandler {
 			// Creating a type for the data 
 			Type type = new TypeToken<Map<String, Map<String, String>>>(){}.getType();
 			
+			
+			// initialising the data 
 			this.data = gson.fromJson(reader, type);
 			
 			// closing reader
 			reader.close();
-		
-		
+	}
+	
+	// getter function for data
+	public Map<String, Map<String, String>> getData(){
+		return this.data;
 	}
 }
