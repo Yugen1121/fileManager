@@ -20,7 +20,7 @@ import javafx.collections.ObservableMap;
 public class DataHandler {
 	
 	private String url = "src/main/resources/data.json";
-	private ObservableMap<String,ObservableMap<String, String>> data = FXCollections.observableHashMap();
+	private ObservableMap<String, DirectoryConfig> data = FXCollections.observableHashMap();
 	
 	public DataHandler() throws Exception{
 		
@@ -31,35 +31,29 @@ public class DataHandler {
 			Gson gson = new Gson();
 			
 			// Creating a type for the data 
-			Type type = new TypeToken<Map<String, Map<String, String>>>(){}.getType();
+			Type type = new TypeToken<Map<String, DirectoryConfig>>(){}.getType();
 			
 			
 			// initialising the data 
-			Map<String, Map<String, String>> data = gson.fromJson(reader, type);
+			Map<String, DirectoryConfig> data = gson.fromJson(reader, type);
 			
 			if (data == null)return;
 			
-			// changing the data to observable map
 			for (String str: data.keySet()) {
-				ObservableMap<String, String> nested = FXCollections.observableHashMap();
-				Map<String, String> mp = data.get(str); 
-				for (String k: mp.keySet()) {
-					nested.put(k, mp.get(k));
-				}
-				this.data.put(str, nested);
+				this.data.put(str, data.get(str));
 			}
 		
 			// closing reader
-			reader.close();
+			reader.close();	
 	}
 	
 	// getter function for data
-	public ObservableMap<String, ObservableMap<String, String>> getData(){
+	public ObservableMap<String, DirectoryConfig> getData(){
 		return this.data;
 	}
 	
 	public void updateData() { 
-		Gson gson = new GsonBuilder().create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		try(FileWriter writer = new FileWriter(this.url)){
 			gson.toJson(this.data, writer);
 		}catch(Exception e) {
