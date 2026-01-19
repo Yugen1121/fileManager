@@ -48,6 +48,9 @@ public class DirectoryConfig {
 	}
 	
 	public ObservableMap<String, String> getFilePaths() {
+		if (this.observableFilePaths == null) {
+			this.observableFilePaths = FXCollections.observableMap(this.filePath);
+		};
 		if (this.observableFilePaths == null) setFilePath(this.filePath);
 		return this.observableFilePaths; 
 	}
@@ -58,9 +61,7 @@ public class DirectoryConfig {
 	}
 	public void setName(String name) { this.nameProp.set(name); }
 	public void setFilePath(Map<String, String> filePaths) {
-		if (this.observableFilePaths == null) {
-			this.observableFilePaths = FXCollections.observableMap(this.filePath);
-		};
+		
 		this.observableFilePaths.clear();
 		this.observableFilePaths.putAll(filePaths);
 	}
