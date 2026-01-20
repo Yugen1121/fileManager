@@ -15,10 +15,10 @@ public class fileHandler {
 		
 		// Target path
 		Path target = Paths.get(tgt);
-		
+		Path tgtFile = target.resolve(source.getFileName());
 		// Atomically moves the file
 		// Throw file not found exception 	if target doesn't exist
-		Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+		Files.move(source, tgtFile, StandardCopyOption.ATOMIC_MOVE);
 	}
 	
 	public static void renameFile(String path, String name) throws Exception{
