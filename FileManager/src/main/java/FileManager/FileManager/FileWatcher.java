@@ -31,8 +31,13 @@ public class FileWatcher {
 	}
 	
 	// adds a new file path 
-	public void addFilePath(String fileType, String path) {
+	public synchronized void addFilePath(String fileType, String path) {
 		this.config.getFilePaths().put(fileType, path);
+		this.dh.updateData();
+	}
+	
+	public synchronized void removeFilePath(String fileType) {
+		this.config.getFilePaths().remove(fileType);
 		this.dh.updateData();
 	}
 	
