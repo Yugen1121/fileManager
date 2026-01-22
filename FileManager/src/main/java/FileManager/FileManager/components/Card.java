@@ -1,6 +1,6 @@
 package FileManager.FileManager.components;
 
-import FileManager.FileManager.Context;
+
 import FileManager.FileManager.FileWatcher;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -18,7 +18,6 @@ public class Card{
 	private VBox mainSection;
 	private FileWatcher fw;
 	private VBox root;
-	private Context context;
 	private int height = 250;
 	private int width = 500;
 	
