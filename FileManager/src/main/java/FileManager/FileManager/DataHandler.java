@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 import java .nio.file.Path;
 
 import java.lang.reflect.Type;
@@ -59,6 +60,20 @@ public class DataHandler {
 		}catch(Exception e) {
 
 		}
+	}
+	
+	// function to add directory path to watch
+	public void addDirectoryWatcherPath(String path, String name) throws Exception{
+		if (this.data.containsKey(path)) {
+			throw new RuntimeException("Path aready exists");
+		}
+		Path p = Paths.get(path);
+		if (!Files.exists(p)) {
+			throw new RuntimeException("Path doesn't exist");
+		}
+		Map<String, String>map = new HashMap<>();
+		this.data.put(path, new DirectoryConfig(name, true, map));
+		System.out.println("Path added successfully");
 	}
 	
 }
