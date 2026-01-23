@@ -20,7 +20,7 @@ public class Card{
 	private VBox root;
 	private int height = 250;
 	private int width = 500;
-	
+		
 	
 	public Card(FileWatcher fw, VBox right) { 
 		this.root = new VBox();

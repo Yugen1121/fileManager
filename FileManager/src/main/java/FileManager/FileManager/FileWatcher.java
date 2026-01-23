@@ -3,21 +3,26 @@ package FileManager.FileManager;
 
 
 import javafx.collections.ObservableMap;
+
+
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 
 import io.methvin.watcher.DirectoryWatcher;
 
 public class FileWatcher {
 	private String directoryPath;
 	private DataHandler dh;
+	private Env env;
 	private DirectoryConfig config;
 	
-	public FileWatcher(String path, DataHandler dh) {
+	public FileWatcher(String path, Env env) {
 		this.directoryPath = path;
-		this.dh = dh;
+		this.env = env;
+		this.dh = env.getData();
 		this.config = dh.getData().get(path);
 		if (config.getActive().get() == true) {
 			try {
@@ -29,17 +34,16 @@ public class FileWatcher {
 		}
 	}
 	
+	
+	// starts a file watcher
 	public void startFileWatcher() throws Exception{
 		Path p = Paths.get(directoryPath).toAbsolutePath().normalize();
-		System.out.println(p.toString());
 		DirectoryWatcher watcher = DirectoryWatcher.builder()
 				.path(p)
 				.listener(e -> {
-					System.out.println("0");
 					switch (e.eventType()) {
 					case CREATE: {
 						try {
-							System.out.println(1);
 							Thread.sleep(500);
 							Path iP = e.path();
 							String sP= iP.toString();
@@ -47,7 +51,6 @@ public class FileWatcher {
 							String type = sP.substring(ind+1);
 							if (config.getFilePaths().containsKey(type)) {
 								fileHandler.moveFile(sP, config.getFilePaths().get(type));
-								System.out.println("Successful");
 							}
 						} catch (InterruptedException e1) {
 							e1.printStackTrace();
@@ -89,7 +92,11 @@ public class FileWatcher {
 	}
 	
 	// adds a new file path 
-	public synchronized void addFilePath(String fileType, String path) {
+	public synchronized void addFilePath(String fileType, String path) throws Exception {
+		Path p = Paths.get(path);
+		if (!Files.exists(p)) {
+			throw new RuntimeException("Invalid path");
+		}
 		this.config.getFilePaths().put(fileType, path);
 		this.dh.updateData();
 	}

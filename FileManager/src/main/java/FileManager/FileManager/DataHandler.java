@@ -73,7 +73,7 @@ public class DataHandler {
 		}
 		Map<String, String>map = new HashMap<>();
 		this.data.put(path, new DirectoryConfig(name, true, map));
-		System.out.println("Path added successfully");
+		
 	}
 	
 }
