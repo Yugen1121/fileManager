@@ -1,17 +1,23 @@
 package FileManager.FileManager;
 
 
+
+import java.util.HashMap;
+import java.util.Map;
+
 import FileManager.FileManager.components.Card;
 import javafx.application.Application;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-
+import javafx.fxml.FXMLLoader;
 
 public class App extends Application
 {
@@ -26,37 +32,55 @@ public class App extends Application
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		// load FXML document 
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
 		
-		// root component to go to the root
-		StackPane root = new StackPane();
-		
+		// load the component from FXMl file to the parent component
+		Parent ld = loader.load();
+				
+		// load components with id from the FXML file 
+		Controller controller = loader.getController();
+
 		// initialise scene
-		Scene scene = new Scene(root, 400, 400);
+		Scene scene = new Scene(ld);
 		
-		// initialise a main component
-		HBox main = new HBox();
+		scene.getStylesheets().add(
+				getClass().getResource("/fx.css").toExternalForm()
+				);		
 		
-		root.getChildren().add(main);
 		
-		VBox left = new VBox();
-		VBox right = new VBox();
-		
-		ObservableList<Node> leftChildren = left.getChildren();
+		ObservableList<Node> leftTopChildren = controller.leftTop.getChildren();
 		
 		// initialise data handler
 		DataHandler dh = new DataHandler();
-		System.out.println(dh.getData());
-		// add path cards to the GUI
-		for (String pth: dh.getData().keySet()) {
-			FileWatcher d = new FileWatcher(pth, dh);
-			Card c = new Card(d, right);
-			leftChildren.add(c.getRoot());
-		}
-		System.out.println(leftChildren);
+		// initialise the environment
+		Env env = new Env(dh);
 		
-		main.getChildren().add(left);
-		main.getChildren().add(right);
-		System.out.println(leftChildren);
+		Map<String, Node> leftTopNodes = new HashMap<>();
+		
+		// add path cards to the GUI
+		env.getWatchers().addListener((MapChangeListener<String, FileWatcher>) change -> {
+			String key = change.getKey();
+			if (change.wasAdded()) {
+				FileWatcher newFw = env.getWatchers().get(key);
+				Card cd = new Card(newFw, controller.rightTop);
+				leftTopNodes.put(key, cd.getRoot());
+				leftTopChildren.add(cd.getRoot());
+			}
+			
+			if (change.wasRemoved()) {
+				Node removedNode = leftTopNodes.remove(key);
+				if (removedNode != null) {
+					leftTopChildren.remove(removedNode);
+				}
+			}
+		});
+		
+		for (FileWatcher fw: env.getWatchers().values()) {
+			Card cd = new Card(fw, controller.rightTop);
+			leftTopChildren.add(cd.getRoot());
+		}
+		
 		primaryStage.setTitle("Test");
 		primaryStage.setScene(scene);
 		primaryStage.show();
