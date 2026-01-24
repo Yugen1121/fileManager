@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.Parent;
 
 import javafx.scene.layout.StackPane;
@@ -38,8 +39,6 @@ public class App extends Application
 		// load the component from FXMl file to the parent component
 		Parent ld = loader.load();
 				
-		// load components with id from the FXML file 
-		Controller controller = loader.getController();
 
 		// initialise scene
 		Scene scene = new Scene(ld);
@@ -49,37 +48,6 @@ public class App extends Application
 				);		
 		
 		
-		ObservableList<Node> leftTopChildren = controller.leftTop.getChildren();
-		
-		// initialise data handler
-		DataHandler dh = new DataHandler();
-		// initialise the environment
-		Env env = new Env(dh);
-		
-		Map<String, Node> leftTopNodes = new HashMap<>();
-		
-		// add path cards to the GUI
-		env.getWatchers().addListener((MapChangeListener<String, FileWatcher>) change -> {
-			String key = change.getKey();
-			if (change.wasAdded()) {
-				FileWatcher newFw = env.getWatchers().get(key);
-				Card cd = new Card(newFw, controller.rightTop);
-				leftTopNodes.put(key, cd.getRoot());
-				leftTopChildren.add(cd.getRoot());
-			}
-			
-			if (change.wasRemoved()) {
-				Node removedNode = leftTopNodes.remove(key);
-				if (removedNode != null) {
-					leftTopChildren.remove(removedNode);
-				}
-			}
-		});
-		
-		for (FileWatcher fw: env.getWatchers().values()) {
-			Card cd = new Card(fw, controller.rightTop);
-			leftTopChildren.add(cd.getRoot());
-		}
 		
 		primaryStage.setTitle("Test");
 		primaryStage.setScene(scene);
