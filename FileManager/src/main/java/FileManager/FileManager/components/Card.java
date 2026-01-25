@@ -2,6 +2,8 @@ package FileManager.FileManager.components;
 
 
 import java.util.function.Consumer;
+
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -12,9 +14,9 @@ public class Card{
 	private Consumer<String> callableOnDelet;
 	private Consumer<String> callableOnClick;
 	
-	public Card(String path, String name) { 
+	public Card(String path, StringProperty name) { 
 		this.root.getStyleClass().add("filePathBox");
-		Label pth = new Label(name);
+		Label pth = new Label(name.get());
 		Button btn = new Button("Delet");
 		btn.setOnAction(event -> {
 			if (this.callableOnDelet != null) {
