@@ -80,6 +80,7 @@ public class Controller {
 		this.buildFilePathSection(path);
 		this.buildFunctionSection(path);
 	}
+	
 	private void buildFilePathSection(String path) {
 		ObservableList<Node> children = this.rightTop.getChildren();
 		children.clear();
@@ -87,9 +88,31 @@ public class Controller {
 		if (dConfig == null) {
 			throw new RuntimeException("File path for the file type could'nt be found");
 		}
-		ObservableMap<String, String> map = dConfig.getFilePaths(); 
+		ObservableMap<String, String> map = dConfig.getFilePaths();
+		Map<String, Node> Nodes = new HashMap<>();
+		map.addListener((MapChangeListener<String, String>) change -> {
+			String k = change.getKey();
+			if (change.wasAdded()) {
+				fileTypeCard ftc = new fileTypeCard(k, map.get(k));
+				ftc.setOnDelet(fileType-> {
+					map.remove(fileType);
+				});
+				children.add(ftc.getRoot());
+				Nodes.put(k, ftc.getRoot());
+			}
+			else if (change.wasRemoved()) {
+				Node removed = Nodes.remove(k);
+				if (removed != null) {
+					children.remove(removed);
+				}
+			}
+		});
 		for (String key: map.keySet()) {
 			fileTypeCard ftc = new fileTypeCard(key, map.get(key));
+			ftc.setOnDelet(fileType-> {
+				map.remove(fileType);
+			});
+			Nodes.put(key, ftc.getRoot());
 			children.add(ftc.getRoot());
 		}
 	}
@@ -117,29 +140,3 @@ public class Controller {
 }
 
 
-/*
-private void build() {
-		this.root.getChildren().clear();
-		HBox name = new HBox();
-		name.getChildren().add(new Label(fw.getName().get()));
-		name.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			buildMainSection();
-			buildFunctionSection();
-		});
-		
-		root.getChildren().add(name);
-	}
-	
-	
-	
-	
-		
-		
-		
-		
-		Label removeWatcher = new Label("Remove directory");
-		
-	}
-	
-	
-*/
