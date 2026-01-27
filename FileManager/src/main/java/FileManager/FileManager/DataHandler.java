@@ -76,4 +76,8 @@ public class DataHandler {
 		
 	}
 	
+	public ObservableMap<String, String> getFilePaths(String path){ 
+		return this.getData().get(path).getFilePaths();
+	}
+	
 }
