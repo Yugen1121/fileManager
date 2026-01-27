@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import FileManager.FileManager.components.Card;
+import FileManager.FileManager.components.DirectoryPathSection;
+import FileManager.FileManager.components.FilePathSection;
 import FileManager.FileManager.components.fileTypeCard;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
@@ -38,105 +40,23 @@ public class Controller {
 	
 	@FXML
 	public void initialize() {
-		leftTop.getStyleClass().add("quarter");
-		ObservableList<Node> leftTopChildren = leftTop.getChildren();
-		
-		ScrollPane ltPane = new ScrollPane(leftTop);
-		
-		Map<String, Node> leftTopNodes = new HashMap<>();
-		
-		// add path cards to the GUI
-		env.getWatchers().addListener((MapChangeListener<String, FileWatcher>) change -> {
-			String key = change.getKey();
-			if (change.wasAdded()) {
-				FileWatcher newFw = env.getWatchers().get(key);
-				Card cd = new Card(newFw.getDirectoryPath(), newFw.getName());
-				cd.setOnClick(path -> {
-						this.buildRight(path);
-				});
-				leftTopNodes.put(key, cd.getRoot());
-				leftTopChildren.add(cd.getRoot());
-			}
-			
-			if (change.wasRemoved()) {
-				Node removedNode = leftTopNodes.remove(key);
-				if (removedNode != null) {
-					leftTopChildren.remove(removedNode);
-				}
-			}
-		});
-		
-		for (FileWatcher fw: env.getWatchers().values()) {
-			Card cd = new Card(fw.getDirectoryPath(), fw.getName());
-			cd.setOnClick(path -> {
-				this.buildRight(path);
-			});
-			
-			leftTopChildren.add(cd.getRoot());
-		}
-	}
-
-	private void buildRight(String path) {
-		this.buildFilePathSection(path);
-		this.buildFunctionSection(path);
+		DirectoryPathSection DPS = new DirectoryPathSection(env.getWatchers());
+		DPS.setBuildFunctionFilePathSection(this::BuildFunctionFilePathSection);
+		this.leftTop.getChildren().add(DPS.getRoot());
 	}
 	
-	private void buildFilePathSection(String path) {
-		ObservableList<Node> children = this.rightTop.getChildren();
-		children.clear();
-		DirectoryConfig dConfig = this.dh.getData().get(path);
-		if (dConfig == null) {
-			throw new RuntimeException("File path for the file type could'nt be found");
-		}
-		ObservableMap<String, String> map = dConfig.getFilePaths();
-		Map<String, Node> Nodes = new HashMap<>();
-		map.addListener((MapChangeListener<String, String>) change -> {
-			String k = change.getKey();
-			if (change.wasAdded()) {
-				fileTypeCard ftc = new fileTypeCard(k, map.get(k));
-				ftc.setOnDelet(fileType-> {
-					map.remove(fileType);
-				});
-				children.add(ftc.getRoot());
-				Nodes.put(k, ftc.getRoot());
-			}
-			else if (change.wasRemoved()) {
-				Node removed = Nodes.remove(k);
-				if (removed != null) {
-					children.remove(removed);
-				}
-			}
-		});
-		for (String key: map.keySet()) {
-			fileTypeCard ftc = new fileTypeCard(key, map.get(key));
-			ftc.setOnDelet(fileType-> {
-				map.remove(fileType);
-			});
-			Nodes.put(key, ftc.getRoot());
-			children.add(ftc.getRoot());
-		}
+	private void BuildFunctionFilePathSection(String path) {
+		this.rightTop.getChildren().clear();
+		FilePathSection FPS = new FilePathSection(path, dh.getFilePaths(path));
+		FPS.setOnDataUpdate(this::updateData);
+		this.rightTop.getChildren().add(FPS.getRoot());
 	}
 	
-	private void buildFunctionSection(String path) {
-		rightBottom.getChildren().clear();
-		ObservableList<Node> children = rightBottom.getChildren();
-		Label functions = new Label("Function");
-		TextField fileTypeInput = new TextField();
-		TextField filePath  = new TextField();
-		Label addNewPath = new Label("Added new path for file type");
-		Button btn = new Button("Submit");
-		btn.setOnAction(e -> {
-			try {
-				this.env.getWatchers().get(path).addFilePath(fileTypeInput.getText(), filePath.getText());
-				fileTypeInput.clear();
-				filePath.clear();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				System.out.println(e1.getMessage());
-			}
-		});
-		children.addAll(functions, addNewPath, fileTypeInput, filePath, btn);
+	private void updateData() {
+		dh.updateData();
 	}
+	
+	
 }
 
 
