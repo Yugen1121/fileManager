@@ -7,6 +7,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -50,6 +51,15 @@ public class DirectoryConfig {
 	public ObservableMap<String, String> getFilePaths() {
 		if (this.observableFilePaths == null) {
 			this.observableFilePaths = FXCollections.observableMap(this.filePath);
+			this.observableFilePaths.addListener((MapChangeListener<String, String>) change->{
+				String key = change.getKey();
+				if (change.wasAdded()) {
+					this.filePath.put(key, change.getValueAdded());
+				}
+				else {
+					this.filePath.remove(key);
+				}
+			});
 		};
 		if (this.observableFilePaths == null) setFilePath(this.filePath);
 		return this.observableFilePaths; 
@@ -64,6 +74,13 @@ public class DirectoryConfig {
 		
 		this.observableFilePaths.clear();
 		this.observableFilePaths.putAll(filePaths);
+	}
+	
+	public void addNewFilePath(String type, String path) throws Exception {
+		if (this.observableFilePaths.containsKey(path)) {
+			throw new RuntimeException("File type "+ type + " already has a path assigned to it.");
+		}
+		this.observableFilePaths.put(type, path);
 	}
 	
 	
