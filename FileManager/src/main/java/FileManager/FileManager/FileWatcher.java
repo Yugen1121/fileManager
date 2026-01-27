@@ -9,20 +9,18 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.IOException;
 import java.nio.file.Files;
 
 import io.methvin.watcher.DirectoryWatcher;
 
 public class FileWatcher {
 	private String directoryPath;
-	private DataHandler dh;
-	private Env env;
 	private DirectoryConfig config;
-	
+	private DirectoryWatcher watcher;
 	public FileWatcher(String path, Env env) {
 		this.directoryPath = path;
-		this.env = env;
-		this.dh = env.getData();
+		DataHandler dh = env.getData();
 		this.config = dh.getData().get(path);
 		if (config.getActive().get() == true) {
 			try {
@@ -38,7 +36,7 @@ public class FileWatcher {
 	// starts a file watcher
 	public void startFileWatcher() throws Exception{
 		Path p = Paths.get(directoryPath).toAbsolutePath().normalize();
-		DirectoryWatcher watcher = DirectoryWatcher.builder()
+		this.watcher = DirectoryWatcher.builder()
 				.path(p)
 				.listener(e -> {
 					switch (e.eventType()) {
@@ -78,32 +76,17 @@ public class FileWatcher {
 		watcherThread.start();
 	}
 	
-	public String getDirectoryPath() {
-		return this.directoryPath;
-	}
-	
-	public StringProperty getName() {
-		return this.config.getName();
-	}
-	
-	// gets all file path
-	public ObservableMap <String, String> getFilePaths(){
-		return this.config.getFilePaths();
-	}
-	
-	// adds a new file path 
-	public synchronized void addFilePath(String fileType, String path) throws Exception {
-		Path p = Paths.get(path);
-		if (!Files.exists(p)) {
-			throw new RuntimeException("Invalid path");
+	public void closeWatcher() throws Exception {
+		if (this.watcher != null) {
+			try {
+				this.watcher.close();
+			}
+			catch (IOException e) {
+				throw new RuntimeException("Closing watcher failed");
+			}
 		}
-		this.config.getFilePaths().put(fileType, path);
-		this.dh.updateData();
 	}
-
-	public synchronized void removeFilePath(String fileType) {
-		this.config.getFilePaths().remove(fileType);
-		this.dh.updateData();
-	}
+	
+	
 	
 }
