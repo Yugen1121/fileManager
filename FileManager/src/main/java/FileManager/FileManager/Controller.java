@@ -5,6 +5,7 @@ import java.util.Map;
 import FileManager.FileManager.components.Card;
 import FileManager.FileManager.components.DirectoryPathSection;
 import FileManager.FileManager.components.FilePathSection;
+import FileManager.FileManager.components.FunctionAddDirectory;
 import FileManager.FileManager.components.FunctionSection;
 import FileManager.FileManager.components.fileTypeCard;
 import javafx.collections.MapChangeListener;
@@ -42,6 +43,7 @@ public class Controller {
 	@FXML
 	public void initialize() {
 		DirectoryPathSection DPS = new DirectoryPathSection(env.getWatchers());
+		DPS.setBuildFunctionAddDirectory(null);
 		DPS.setBuildFunctionFilePathSection(this::BuildFunctionFilePathSection);
 		this.leftTop.getChildren().add(DPS.getRoot());
 	}
@@ -59,6 +61,12 @@ public class Controller {
 		this.rightBottom.getChildren().clear();
 		this.rightBottom.getChildren().add(FS.getRoot());
 		
+	}
+	
+	private void BuildFunctionAddSection() {
+		FunctionAddDirectory FAD = new FunctionAddDirectory();
+		this.rightBottom.getChildren().clear();
+		this.rightBottom.getChildren().add(FAD.getRoot());
 	}
 	
 	private void addNewFilePath(String dirPath, String fileType, String path) {
