@@ -5,6 +5,7 @@ import java.util.Map;
 import FileManager.FileManager.components.Card;
 import FileManager.FileManager.components.DirectoryPathSection;
 import FileManager.FileManager.components.FilePathSection;
+import FileManager.FileManager.components.FunctionSection;
 import FileManager.FileManager.components.fileTypeCard;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
@@ -52,6 +53,22 @@ public class Controller {
 		this.rightTop.getChildren().add(FPS.getRoot());
 	}
 	
+	private void BuildFunctionSection(String path) {
+		FunctionSection FS = new FunctionSection(path);
+		FS.setOnAction(this::addNewFilePath);
+		this.rightBottom.getChildren().clear();
+		this.rightBottom.getChildren().add(FS.getRoot());
+		
+	}
+	
+	private void addNewFilePath(String dirPath, String fileType, String path) {
+		DirectoryConfig DC = dh.getDirectoryConfig(dirPath);
+		try {
+			DC.addNewFilePath(fileType, path);
+		} catch (Exception e) { 
+			System.out.print(e.getMessage());
+		}
+	}
 	private void updateData() {
 		dh.updateData();
 	}
