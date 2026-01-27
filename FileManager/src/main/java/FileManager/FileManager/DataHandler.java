@@ -77,7 +77,20 @@ public class DataHandler {
 	}
 	
 	public ObservableMap<String, String> getFilePaths(String path){ 
-		return this.getData().get(path).getFilePaths();
+		return this.data.get(path).getFilePaths();
 	}
 	
+	public DirectoryConfig getDirectoryConfig(String path) {
+		return this.data.get(path);
+	}
+	
+	public void addDirectory(String path, String name) throws Exception {
+		if (this.data.containsKey(path)) {
+			throw new RuntimeException("Path "+path+" already exists");
+		}
+		ObservableMap<String, String> map = FXCollections.observableHashMap();
+		DirectoryConfig DC = new DirectoryConfig(name, true, map);
+		this.data.put(path, DC);
+		this.updateData();
+	}
 }
