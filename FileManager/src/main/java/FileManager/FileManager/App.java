@@ -1,23 +1,10 @@
 package FileManager.FileManager;
 
-
-
-import java.util.HashMap;
-import java.util.Map;
-
-import FileManager.FileManager.components.Card;
 import javafx.application.Application;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
 import javafx.stage.Stage;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.Parent;
 
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 import javafx.fxml.FXMLLoader;
 
 public class App extends Application
@@ -36,9 +23,17 @@ public class App extends Application
 		// load FXML document 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
 		
+		DataHandler dh = new DataHandler();
+		
+		Env env = new Env(dh);
+		
+		loader.setControllerFactory( clazz -> 
+			new Controller(dh, env, primaryStage)
+				
+				);
+		
 		// load the component from FXMl file to the parent component
 		Parent ld = loader.load();
-				
 
 		// initialise scene
 		Scene scene = new Scene(ld);

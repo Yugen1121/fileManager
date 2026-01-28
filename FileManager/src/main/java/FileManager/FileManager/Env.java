@@ -1,5 +1,6 @@
 package FileManager.FileManager;
 
+import File.FileWatcher;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -20,4 +21,5 @@ public class Env {
 	public ObservableMap<String, FileWatcher> getWatchers(){
 		return this.watchers;
 	}
+	
 }

@@ -25,7 +25,7 @@ public class Card{
 			event.consume();
 		});
 		root.getChildren().addAll(pth, btn);
-		root.setOnMouseClicked(eventt -> {
+		root.setOnMouseClicked(event -> {
 			if(this.callableOnClick != null) {
 				this.callableOnClick.accept(path);
 			}

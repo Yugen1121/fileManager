@@ -65,8 +65,13 @@ public class Controller {
 	
 	private void BuildFunctionAddSection() {
 		FunctionAddDirectory FAD = new FunctionAddDirectory();
+		FAD.setOnAction(null);
 		this.rightBottom.getChildren().clear();
 		this.rightBottom.getChildren().add(FAD.getRoot());
+	}
+	
+	private void addDirectory(String path, String name) {
+		
 	}
 	
 	private void addNewFilePath(String dirPath, String fileType, String path) {
