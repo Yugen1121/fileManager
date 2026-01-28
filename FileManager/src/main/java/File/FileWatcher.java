@@ -12,27 +12,9 @@ import java.io.IOException;
 import io.methvin.watcher.DirectoryWatcher;
 
 public class FileWatcher {
-	private String directoryPath;
-	private DirectoryConfig config;
 	private DirectoryWatcher watcher;
-	public FileWatcher(String path, Env env) {
-		this.directoryPath = path;
-		DataHandler dh = env.getData();
-		this.config = dh.getData().get(path);
-		if (config.getActive().get() == true) {
-			try {
-				this.startFileWatcher();
-			}
-			catch (Exception e) {
-				System.out.println("Failed to start watcher for: " + this.directoryPath);
-			}
-		}
-	}
-	
-	
-	// starts a file watcher
-	public void startFileWatcher() throws Exception{
-		Path p = Paths.get(directoryPath).toAbsolutePath().normalize();
+	public FileWatcher(String path, DirectoryConfig config) throws Exception {
+		Path p = Paths.get(path).toAbsolutePath().normalize();
 		this.watcher = DirectoryWatcher.builder()
 				.path(p)
 				.listener(e -> {
@@ -61,7 +43,9 @@ public class FileWatcher {
 						throw new IllegalArgumentException("Unexpected value: ");
 					}
 				}).build();
+
 	}
+	
 	
 	public void closeWatcher() throws Exception {
 		if (this.watcher != null) {
