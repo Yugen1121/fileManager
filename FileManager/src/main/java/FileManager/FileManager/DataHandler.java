@@ -86,4 +86,13 @@ public class DataHandler {
 		};
 		this.updateData();
 	}
+	
+	public void removeFilePath(String directory, String type) {
+		try {
+			this.data.get(directory).removeFilePath(type);
+		} catch (Exception e) {
+			System.out.println("Failed to add new path");;
+		};
+		this.updateData();
+	}
 }
