@@ -68,4 +68,22 @@ public class DataHandler {
 		this.data.put(path, DC);
 		this.updateData();
 	}
+	
+	public void removeDirectory(String path) throws Exception {
+		if (this.data.containsKey(path)) {
+			throw new RuntimeException("Path "+path+" already exists");
+		}
+		this.data.remove(path);
+		this.updateData();
+	}
+	
+	
+	public void addNewFilePath(String directory, String type, String path) {
+		try {
+			this.data.get(directory).addNewFilePath(type, path);
+		} catch (Exception e) {
+			System.out.println("Failed to add new path");;
+		};
+		this.updateData();
+	}
 }
