@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import File.FileWatcher;
+import FileManager.FileManager.DataHandler;
+import javafx.beans.property.StringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -18,7 +20,9 @@ public class DirectoryPathSection {
 	private VBox root = new VBox();
 	private Runnable buildFunctionAddDirectory;
 	private Consumer<String> buildFunctionFilePathSection;
-	public DirectoryPathSection(ObservableMap<String, FileWatcher> fileWatchers) {
+	private Consumer<String> buildFunctionSection;
+	
+	public DirectoryPathSection(ObservableMap<String, FileWatcher> fileWatchers, DataHandler dh) {
 		ObservableList<Node> leftTopChildren = root.getChildren();
 		Map<String, Node> leftTopNodes = new HashMap<>();
 		
@@ -39,14 +43,9 @@ public class DirectoryPathSection {
 			String key = change.getKey();
 			if (change.wasAdded()) {
 				FileWatcher newFw = fileWatchers.get(key);
-				Card cd = new Card(newFw.getDirectoryPath(), newFw.getName());
-				cd.setOnClick(path -> {
-						if (this.buildFunctionFilePathSection != null) {
-							this.buildFunctionFilePathSection.accept(path);
-						}
-				});
-				leftTopNodes.put(key, cd.getRoot());
-				leftTopChildren.add(cd.getRoot());
+				HBox cd = this.createCard(key, dh.getData().get(key).getName());
+				leftTopChildren.add(cd);
+				leftTopChildren.add(cd);
 			}
 			
 			if (change.wasRemoved()) {
@@ -58,24 +57,31 @@ public class DirectoryPathSection {
 		});
 		
 		// Adds the directory watcher button to the GUI
-		for (FileWatcher fw: fileWatchers.values()) {
-			Card cd = new Card(fw.getDirectoryPath(), fw.getName());
-			cd.setOnClick(path -> {
-				if (this.buildFunctionFilePathSection != null){
-					this.buildFunctionFilePathSection.accept(path);
-				}
-			});
-			
-			leftTopChildren.add(cd.getRoot());
+		for (String key: fileWatchers.keySet()) {
+			leftTopChildren.add(this.createCard(key, dh.getData().get(key).getName()));
 		}
 	}
 	
+	public HBox createCard(String path, StringProperty name) {
+		Card cd = new Card(path, name);
+		cd.setOnClick(pa -> {
+			if (this.buildFunctionFilePathSection != null){
+				this.buildFunctionFilePathSection.accept(pa);
+				this.buildFunctionSection.accept(pa);
+			}
+		});
+		return cd.getRoot();
+	}
 	public void setBuildFunctionAddDirectory(Runnable runnable) {
 		this.buildFunctionAddDirectory = runnable;
 	}
 	
 	public void setBuildFunctionFilePathSection(Consumer<String> callable) {
 		this.buildFunctionFilePathSection = callable;
+	}
+	
+	public void setBuildFunctionSection(Consumer<String> callable) {
+		this.buildFunctionSection = callable;
 	}
 	
 	public VBox getRoot() {
