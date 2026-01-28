@@ -22,30 +22,10 @@ public class DataHandler {
 	
 	private String url = "src/main/resources/data.json";
 	private ObservableMap<String, DirectoryConfig> data = FXCollections.observableHashMap();
-	
-	public DataHandler() throws Exception{
-		
-			// Reading the data from the json file
-			FileReader reader = new FileReader(this.url);
-			
-			// Initialising Gson
-			Gson gson = new Gson();
-			
-			// Creating a type for the data 
-			Type type = new TypeToken<Map<String, DirectoryConfig>>(){}.getType();
-			
-			
-			// initialising the data 
-			Map<String, DirectoryConfig> data = gson.fromJson(reader, type);
-			
-			if (data == null)return;
-			
-			for (String str: data.keySet()) {
-				this.data.put(str, data.get(str));
-			}
-		
-			// closing reader
-			reader.close();	
+	private JsonLoader repository;
+	public DataHandler(JsonLoader repo) throws Exception{
+		this.repository = repo;
+		this.data.putAll(this.repository.load());
 	}
 	
 	// getter function for data
@@ -54,12 +34,7 @@ public class DataHandler {
 	}
 	
 	public void updateData() { 
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		try(FileWriter writer = new FileWriter(this.url)){
-			gson.toJson(this.data, writer);
-		}catch(Exception e) {
-
-		}
+		this.repository.update(this.data);
 	}
 	
 	// function to add directory path to watch
