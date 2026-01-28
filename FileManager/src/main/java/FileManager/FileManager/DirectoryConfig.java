@@ -83,5 +83,7 @@ public class DirectoryConfig {
 		this.observableFilePaths.put(type, path);
 	}
 	
-	
-}
+	public void removeFilePath(String type) {
+		this.observableFilePaths.remove(type);
+	}
+}	
