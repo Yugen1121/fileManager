@@ -19,6 +19,8 @@ public class FunctionSection {
 			TextField fileTypeInput = new TextField();
 			TextField filePath  = new TextField();
 			Label addNewPath = new Label("Added new path for file type");
+			Label newType = new Label("Type:");
+			Label newPath = new Label("Path:");
 			Button btn = new Button("Submit");
 			
 			btn.setOnAction(e -> {
@@ -29,7 +31,7 @@ public class FunctionSection {
 				}
 			});
 			
-			children.addAll(functions, addNewPath, fileTypeInput, filePath, btn);
+			children.addAll(functions, addNewPath, newType, fileTypeInput, newPath, filePath, btn);
 	}
 	
 	public void setOnAction(TriConsumer<String, String, String> callable) {

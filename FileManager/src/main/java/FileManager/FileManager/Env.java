@@ -12,7 +12,8 @@ public class Env {
 		this.data = data;
 		for (String s: data.getData().keySet()) {
 			try {
-				this.watchers.put(s, new FileWatcher(s, data.getDirectoryConfig(s)));
+				this.watchers.put(s, new FileWatcher(s, data.getDirectoryConfig(s), 
+						data.getDirectoryConfig(s).getActive().get()));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
@@ -22,7 +23,8 @@ public class Env {
 			String key = change.getKey();
 			try {
 				if (change.wasAdded()) {
-					this.watchers.put(key, new FileWatcher(key, data.getDirectoryConfig(key)));
+					this.watchers.put(key, new FileWatcher(key, data.getDirectoryConfig(key), 
+							data.getDirectoryConfig(key).getActive().get()));
 				}
 				else if (change.wasRemoved()) {
 					this.removeWatcher(key);
@@ -32,6 +34,7 @@ public class Env {
 				System.out.println(e.getMessage());
 			}
 		});
+		
 	}
 	
 	public DataHandler getData() {

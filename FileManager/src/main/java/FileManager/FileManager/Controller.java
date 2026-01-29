@@ -1,25 +1,12 @@
 package FileManager.FileManager;
-import java.util.HashMap;
-import java.util.Map;
 
-import FileManager.FileManager.components.Card;
 import FileManager.FileManager.components.DirectoryPathSection;
 import FileManager.FileManager.components.FilePathSection;
 import FileManager.FileManager.components.FunctionAddDirectory;
 import FileManager.FileManager.components.FunctionSection;
-import FileManager.FileManager.components.fileTypeCard;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class Controller {
 	@FXML private HBox root;
@@ -30,21 +17,23 @@ public class Controller {
 	@FXML private VBox leftTop;
 	@FXML private VBox leftBottom;
 	
-	private Stage stage;
+
 	private DataHandler dh;
 	private Env env;
 	
-	public Controller(DataHandler dh, Env env, Stage stage) {
+	public Controller(DataHandler dh, Env env) {
 		this.env = env;
 		this.dh = dh;
-		this.stage = stage;
+
 	}
 	
 	@FXML
 	public void initialize() {
-		DirectoryPathSection DPS = new DirectoryPathSection(env.getWatchers());
-		DPS.setBuildFunctionAddDirectory(null);
+		DirectoryPathSection DPS = new DirectoryPathSection(env.getWatchers(), this.dh);
+		DPS.setBuildFunctionAddDirectory(this::BuildFunctionAddSection);
 		DPS.setBuildFunctionFilePathSection(this::BuildFunctionFilePathSection);
+		DPS.setBuildFunctionSection(this::BuildFunctionSection);
+		DPS.setWhenRemoved(this::removeDirectory);
 		this.leftTop.getChildren().add(DPS.getRoot());
 	}
 	
@@ -65,27 +54,41 @@ public class Controller {
 	
 	private void BuildFunctionAddSection() {
 		FunctionAddDirectory FAD = new FunctionAddDirectory();
-		FAD.setOnAction(null);
+		FAD.setOnAction(this::addDirectory);
 		this.rightBottom.getChildren().clear();
 		this.rightBottom.getChildren().add(FAD.getRoot());
 	}
 	
 	private void addDirectory(String path, String name) {
-		
+		try {
+			this.dh.addDirectory(path, name);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void removeDirectory(String directory) {
+		try {
+			this.dh.removeDirectory(directory);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void addNewFilePath(String dirPath, String fileType, String path) {
-		DirectoryConfig DC = dh.getDirectoryConfig(dirPath);
 		try {
-			DC.addNewFilePath(fileType, path);
-		} catch (Exception e) { 
-			System.out.print(e.getMessage());
+			this.dh.addNewFilePath(dirPath, fileType, path);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	private void updateData() {
-		dh.updateData();
+		try {
+			dh.updateData();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-	
 	
 }
 

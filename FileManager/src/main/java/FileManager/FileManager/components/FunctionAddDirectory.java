@@ -17,17 +17,18 @@ public class FunctionAddDirectory {
 		TextField nameField = new TextField();
 		Button btn = new Button("Add");
 		btn.setOnAction(event -> {
+			if (this.onActionCallable == null) return;
 			this.onActionCallable.accept(pathField.getText(), nameField.getText());
 			pathField.clear();
 			nameField.clear();
 		});
-		this.root.getChildren().addAll(path, pathField, name, nameField);
+		this.root.getChildren().addAll(path, pathField, name, nameField, btn);
 	}
 	
 	public void setOnAction(BiConsumer<String, String> callable) {
 		this.onActionCallable = callable;
 	}
-	
+		
 	public VBox getRoot() {
 		return this.root;
 	}

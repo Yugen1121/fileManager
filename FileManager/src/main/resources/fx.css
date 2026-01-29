@@ -1,0 +1,37 @@
+
+.root {
+	-my-main-width: 1000;
+	-my-main-height: 500;
+	
+	-my-half-width: 500;
+	-my-half-height: 250;
+}
+
+.barLess .scroll-bar:horizontal,
+.barLess .scroll-bar:vertical{
+	-fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+
+.scene {
+	-fx-min-height: -my-main-height;
+	-fx-min-width: -my-main-width;
+}
+
+.main{
+	-fx-min-height: -my-main-height;
+	-fx-min-width: -my-main-width;
+}
+
+.half{
+	-fx-min-height: -my-main-height;
+	-fx-min-width: -my-half-width;
+}
+
+.quarter{
+	-fx-min-height: -my-half-height;
+	-fx-min-width: -my-half-width;
+}
+

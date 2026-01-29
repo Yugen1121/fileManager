@@ -21,9 +21,10 @@ public class DirectoryPathSection {
 	private Runnable buildFunctionAddDirectory;
 	private Consumer<String> buildFunctionFilePathSection;
 	private Consumer<String> buildFunctionSection;
+	private Consumer<String> removeDirectory;
 	
 	public DirectoryPathSection(ObservableMap<String, FileWatcher> fileWatchers, DataHandler dh) {
-		ObservableList<Node> leftTopChildren = root.getChildren();
+		ObservableList<Node> children = root.getChildren();
 		Map<String, Node> leftTopNodes = new HashMap<>();
 		
 		HBox DWABox = new HBox();
@@ -36,34 +37,40 @@ public class DirectoryPathSection {
 		});
 		
 		DWABox.getChildren().addAll(Lbl, btn2);
-		leftTopChildren.add(DWABox);
+		children.add(DWABox);
 		
 		// add path cards to the GUI
 		fileWatchers.addListener((MapChangeListener<String, FileWatcher>) change -> {
 			String key = change.getKey();
 			if (change.wasAdded()) {
-				FileWatcher newFw = fileWatchers.get(key);
-				HBox cd = this.createCard(key, dh.getData().get(key).getName());
-				leftTopChildren.add(cd);
-				leftTopChildren.add(cd);
+				Node cd = this.createCard(key, dh.getData().get(key).getName());
+				children.add(cd);
+				leftTopNodes.put(key, cd);
 			}
 			
 			if (change.wasRemoved()) {
 				Node removedNode = leftTopNodes.remove(key);
 				if (removedNode != null) {
-					leftTopChildren.remove(removedNode);
+					children.remove(removedNode);
 				}
 			}
 		});
 		
 		// Adds the directory watcher button to the GUI
 		for (String key: fileWatchers.keySet()) {
-			leftTopChildren.add(this.createCard(key, dh.getData().get(key).getName()));
+			Node nd = this.createCard(key, dh.getData().get(key).getName());
+			children.add(nd);
+			leftTopNodes.put(key, nd);
 		}
 	}
 	
 	public HBox createCard(String path, StringProperty name) {
 		Card cd = new Card(path, name);
+		cd.setOnDelet(pa -> {
+			if (this.removeDirectory != null) {
+				this.removeDirectory.accept(pa);
+			}
+		});
 		cd.setOnClick(pa -> {
 			if (this.buildFunctionFilePathSection != null){
 				this.buildFunctionFilePathSection.accept(pa);
@@ -82,6 +89,10 @@ public class DirectoryPathSection {
 	
 	public void setBuildFunctionSection(Consumer<String> callable) {
 		this.buildFunctionSection = callable;
+	}
+	
+	public void setWhenRemoved(Consumer<String> callable) {
+		this.removeDirectory = callable;
 	}
 	
 	public VBox getRoot() {

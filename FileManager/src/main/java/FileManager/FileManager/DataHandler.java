@@ -1,17 +1,8 @@
 package FileManager.FileManager;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java .nio.file.Path;
-
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,10 +11,9 @@ import javafx.collections.ObservableMap;
 
 public class DataHandler {
 	
-	private String url = "src/main/resources/data.json";
 	private ObservableMap<String, DirectoryConfig> data = FXCollections.observableHashMap();
-	private JsonLoader repository;
-	public DataHandler(JsonLoader repo) throws Exception{
+	private Database<Map<String, DirectoryConfig>, ObservableMap<String, DirectoryConfig>, Exception> repository;
+	public DataHandler(Database<Map<String, DirectoryConfig>, ObservableMap<String, DirectoryConfig>, Exception> repo) throws Exception{
 		this.repository = repo;
 		this.data.putAll(this.repository.load());
 	}
@@ -33,7 +23,8 @@ public class DataHandler {
 		return this.data;
 	}
 	
-	public void updateData() { 
+	public void updateData() throws Exception { 
+		
 		this.repository.update(this.data);
 	}
 	
@@ -63,6 +54,10 @@ public class DataHandler {
 		if (this.data.containsKey(path)) {
 			throw new RuntimeException("Path "+path+" already exists");
 		}
+		Path p = Paths.get(path);
+		if (!Files.exists(p)) {
+			throw new RuntimeException("Path " + path + " does not exist");
+		}
 		ObservableMap<String, String> map = FXCollections.observableHashMap();
 		DirectoryConfig DC = new DirectoryConfig(name, true, map);
 		this.data.put(path, DC);
@@ -70,16 +65,16 @@ public class DataHandler {
 	}
 	
 	public void removeDirectory(String path) throws Exception {
-		if (this.data.containsKey(path)) {
-			throw new RuntimeException("Path "+path+" already exists");
-		}
 		this.data.remove(path);
 		this.updateData();
 	}
 	
 	
-	public void addNewFilePath(String directory, String type, String path) {
+	public void addNewFilePath(String directory, String type, String path) throws Exception {
+		Path p = Paths.get(path);
+		if (!Files.exists(p)) throw new RuntimeException("Directory path doesn't exists.");
 		try {
+			
 			this.data.get(directory).addNewFilePath(type, path);
 		} catch (Exception e) {
 			System.out.println("Failed to add new path");;
@@ -87,7 +82,7 @@ public class DataHandler {
 		this.updateData();
 	}
 	
-	public void removeFilePath(String directory, String type) {
+	public void removeFilePath(String directory, String type) throws Exception {
 		try {
 			this.data.get(directory).removeFilePath(type);
 		} catch (Exception e) {

@@ -13,7 +13,7 @@ import io.methvin.watcher.DirectoryWatcher;
 
 public class FileWatcher {
 	private DirectoryWatcher watcher;
-	public FileWatcher(String path, DirectoryConfig config) throws Exception {
+	public FileWatcher(String path, DirectoryConfig config, Boolean active) throws Exception {
 		Path p = Paths.get(path).toAbsolutePath().normalize();
 		this.watcher = DirectoryWatcher.builder()
 				.path(p)
@@ -41,6 +41,9 @@ public class FileWatcher {
 						throw new IllegalArgumentException("Unexpected value: ");
 					}
 				}).build();
+		if (active) {
+			this.startWatcher();
+		}
 	}
 	
 	

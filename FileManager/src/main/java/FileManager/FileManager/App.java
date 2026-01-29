@@ -22,13 +22,10 @@ public class App extends Application
 	public void start(Stage primaryStage) throws Exception {
 		// load FXML document 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
-		
-		DataHandler dh = new DataHandler();
-		
+		DataHandler dh = new DataHandler(new JsonLoader());
 		Env env = new Env(dh);
-		
 		loader.setControllerFactory( clazz -> 
-			new Controller(dh, env, primaryStage)
+			new Controller(dh, env)
 				
 				);
 		
@@ -41,8 +38,6 @@ public class App extends Application
 		scene.getStylesheets().add(
 				getClass().getResource("/fx.css").toExternalForm()
 				);		
-		
-		
 		
 		primaryStage.setTitle("Test");
 		primaryStage.setScene(scene);
