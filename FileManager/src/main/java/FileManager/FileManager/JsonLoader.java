@@ -13,7 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import javafx.collections.ObservableMap;
 
-public class JsonLoader {
+public class JsonLoader implements Database<Map<String, DirectoryConfig>, ObservableMap<String, DirectoryConfig>,Exception> {
 	private String url = "src/main/resources/data.json";
 	private Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
@@ -36,7 +36,8 @@ public class JsonLoader {
 		return data;
 	}
 	
-	public void update(ObservableMap<String, DirectoryConfig> New) {
+	
+	public void update(ObservableMap<String, DirectoryConfig> New) throws Exception{
 		try (FileWriter writer = new FileWriter(this.url)){
 			this.gson.toJson(New, writer);
 		}
